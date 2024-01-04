@@ -1,0 +1,153 @@
+#include <iostream>
+#include <algorithm>
+
+struct Node {
+    int key;
+    Node* left;
+    Node* right;
+    int height;
+    
+    Node(int k) : key(k), left(nullptr), right(nullptr), height(1) {}
+};
+
+int getHeight(Node* node) {
+    return (node != nullptr) ? node->height : 0;
+}
+
+int getBalanceFactor(Node* node) {
+    return (node != nullptr) ? getHeight(node->left) - getHeight(node->right) : 0;
+}
+
+void updateHeight(Node* node) {
+    if (node != nullptr) {
+        node->height = 1 + std::max(getHeight(node->left), getHeight(node->right));
+    }
+}
+
+Node* rightRotate(Node* y) {
+    Node* x = y->left;
+    Node* T2 = x->right;
+
+    x->right = y;
+    y->left = T2;
+
+    updateHeight(y);
+    updateHeight(x);
+
+    return x;
+}
+
+Node* leftRotate(Node* x) {
+    Node* y = x->right;
+    Node* T2 = y->left;
+
+    y->left = x;
+    x->right = T2;
+
+    updateHeight(x);
+    updateHeight(y);
+
+    return y;
+}
+
+Node* insert(Node* root, int key) {
+    if (root == nullptr) {
+        return new Node(key);
+    }
+
+    if (key < root->key) {
+        root->left = insert(root->left, key);
+    } else if (key > root->key) {
+        root->right = insert(root->right, key);
+    } else {
+        return root; 
+    }
+
+    updateHeight(root);
+
+    int balance = getBalanceFactor(root);
+
+    return root;
+}
+
+Node* minValueNode(Node* node) {
+    Node* current = node;
+    while (current->left != nullptr) {
+        current = current->left;
+    }
+    return current;
+}
+
+Node* deleteNode(Node* root, int key) {
+    if (root == nullptr) {
+        return root;
+    }
+
+    if (key < root->key) {
+        root->left = deleteNode(root->left, key);
+    } else if (key > root->key) {
+        root->right = deleteNode(root->right, key);
+    } else {
+        if (root->left == nullptr || root->right == nullptr) {
+            Node* temp = root->left ? root->left : root->right;
+
+            if (temp == nullptr) {
+                temp = root;
+                root = nullptr;
+            } else {
+                *root = *temp;
+            }
+
+            delete temp;
+        } else {
+            Node* temp = minValueNode(root->right);
+            root->key = temp->key;
+            root->right = deleteNode(root->right, temp->key);
+        }
+    }
+
+    if (root == nullptr) {
+        return root;
+    }
+
+    updateHeight(root);
+
+    int balance = getBalanceFactor(root);
+
+    
+
+    return root;
+}
+
+
+void inOrderTraversal(Node* root) {
+    if (root != nullptr) {
+        inOrderTraversal(root->left);
+        std::cout << root->key << " ";
+        inOrderTraversal(root->right);
+    }
+}
+
+int main() {
+    Node* root = nullptr;
+
+   
+    root = insert(root, 10);
+    root = insert(root, 20);
+    root = insert(root, 30);
+    root = insert(root, 15);
+    root = insert(root, 5);
+
+    std::cout << "In-order traversal before deletion: ";
+    inOrderTraversal(root);
+    std::cout << std::endl;
+
+    
+    root = deleteNode(root, 20);
+
+    std::cout << "In-order traversal after deletion: ";
+    inOrderTraversal(root);
+    std::cout << std::endl;
+
+    return 0;
+}
