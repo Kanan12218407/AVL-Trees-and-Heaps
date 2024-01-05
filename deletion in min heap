@@ -1,0 +1,48 @@
+#include <iostream>
+using namespace std;
+void swap(int& a, int& b) {
+    int temp = a;
+    a = b;
+    b = temp;
+}
+void minheapifydown(int* heap,int size,int index){
+    int leftchild=2*index+1;
+    int rightchild=2*index+2;
+    int smallest=index;
+    
+    if(leftchild<size && heap[leftchild]<heap[smallest]){
+        smallest=leftchild;
+    }
+    if(rightchild<size && heap[rightchild]<heap[smallest]){
+        smallest=rightchild;
+    }
+    if(smallest!=index){
+        swap(heap[index],heap[smallest]);
+        minheapifydown(heap,size,smallest);
+    }
+}
+int deletemin(int* &heap,int size){
+    if(size==0){
+        cout<<"heap is empty"<<endl;
+        return -1;
+    } 
+    int minelement=heap[0];
+    heap[0]=heap[size-1];
+    --size;
+    
+    minheapifydown(heap,size,0);
+    return minelement;
+}
+int main(){
+    int* minheap=new int[5]{10,20,30,40,50};
+    int heapsize=5;
+    int minelement=deletemin(minheap,heapsize);
+    cout<<"max heap after deletion: ";
+    for(int i=0;i<heapsize;++i){
+        cout<<minheap[i]<<" ";
+    }
+    cout<<endl;
+    cout<<"deleted min element: "<<minelement<<endl;
+    delete[] minheap;
+    return 0;
+}
