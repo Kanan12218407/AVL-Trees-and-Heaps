@@ -1,0 +1,46 @@
+#include <iostream>
+using namespace std;
+void swap(int& a, int& b) {
+    int temp = a;
+    a = b;
+    b = temp;
+}
+
+void minheapifyup(int* heap, int index) {
+    while (index > 0) {
+        int parentindex = (index - 1) / 2;
+        if (heap[index] < heap[parentindex]) {
+            swap(heap[index], heap[parentindex]);
+            index = parentindex;
+        } else {
+            break;
+        }
+    }
+}
+
+void insertminheap(int*& heap, int& size, int value) {
+    int* newheap = new int[size + 1];
+    
+    for(int i=0;i<size;++i){
+        newheap[i]=heap[i];
+    }
+    delete[] heap;
+    
+    newheap[size++]=value;
+    heap=newheap;
+    
+    minheapifyup(heap,size-1);
+}
+int main(){
+    int* minheap=new int[5]{10,20,30,40,50};
+    int heapsize=5;
+    
+    insertminheap(minheap,heapsize,60);
+    cout<<"min heap after insertion: ";
+    for(int i=0;i<heapsize;++i){
+        cout<<minheap[i]<<" ";
+    }
+    
+    delete[] minheap;
+    return 0;
+}
